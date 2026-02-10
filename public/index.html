@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务管理器 - PocketBase</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- 登录/注册表单 -->
+        <div id="auth-section" class="card">
+            <h2><i class="fas fa-user"></i> 用户认证</h2>
+            <div class="tabs">
+                <button class="tab active" onclick="showLogin()">登录</button>
+                <button class="tab" onclick="showRegister()">注册</button>
+            </div>
+
+            <form id="login-form" class="auth-form">
+                <input type="email" id="login-email" placeholder="邮箱" required>
+                <input type="password" id="login-password" placeholder="密码" required>
+                <button type="submit">登录</button>
+            </form>
+
+            <form id="register-form" class="auth-form" style="display: none;">
+                <input type="email" id="register-email" placeholder="邮箱" required>
+                <input type="password" id="register-password" placeholder="密码" required>
+                <input type="password" id="register-passwordConfirm" placeholder="确认密码" required>
+                <button type="submit">注册</button>
+            </form>
+
+            <div id="auth-message" class="message"></div>
+        </div>
+
+        <!-- 任务管理界面 -->
+        <div id="app-section" class="card" style="display: none;">
+            <div class="header">
+                <h2><i class="fas fa-tasks"></i> 我的任务</h2>
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> 退出
+                </button>
+            </div>
+
+            <!-- 添加新任务 -->
+            <div class="add-task">
+                <input type="text" id="new-task-title" placeholder="新任务标题">
+                <input type="text" id="new-task-description" placeholder="任务描述">
+                <input type="date" id="new-task-due">
+                <button onclick="addTask()"><i class="fas fa-plus"></i> 添加任务</button>
+            </div>
+
+            <!-- 任务列表 -->
+            <div class="task-filters">
+                <button onclick="filterTasks('all')" class="active">全部</button>
+                <button onclick="filterTasks('pending')">待完成</button>
+                <button onclick="filterTasks('completed')">已完成</button>
+            </div>
+
+            <div id="tasks-container">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载 PocketBase SDK -->
+    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
