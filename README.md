@@ -4,6 +4,7 @@
 
 项目的整体结构：
 
+```bash
 Directory structure:
 └── pocket_space/
     ├── README.md
@@ -23,6 +24,7 @@ Directory structure:
         ├── app.js
         ├── index.html
         └── style.css
+```
 
 test_user.txt: 主要记录了一些测试账户
 主要文件在 public 中， go_backend 是用于尝试使用 go 语言而不使用 SDK 来编写后端逻辑，对该项目本身没有影响。
