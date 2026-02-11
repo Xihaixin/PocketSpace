@@ -57,10 +57,10 @@ function showRegister() {
 // 登录
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
-    
+
     try {
         const authData = await pb.collection('users').authWithPassword(email, password);
         currentUser = authData.record;
@@ -76,16 +76,16 @@ loginForm.addEventListener('submit', async (e) => {
 // 注册
 registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
     const passwordConfirm = document.getElementById('register-passwordConfirm').value;
-    
+
     if (password !== passwordConfirm) {
         showMessage('两次输入的密码不一致', 'error');
         return;
     }
-    
+
     try {
         const data = {
             email: email,
@@ -93,7 +93,7 @@ registerForm.addEventListener('submit', async (e) => {
             passwordConfirm: passwordConfirm,
             emailVisibility: false
         };
-        
+
         await pb.collection('users').create(data);
         showMessage('注册成功！请登录', 'success');
         showLogin();
@@ -123,14 +123,14 @@ function showMessage(text, type) {
 // 加载任务
 async function loadTasks() {
     tasksContainer.innerHTML = '<div class="loading">加载中...</div>';
-    
+
     try {
         const filter = getFilterQuery();
         const tasks = await pb.collection('tasks').getFullList({
             filter: filter,
             sort: '-created'
         });
-        
+
         renderTasks(tasks);
     } catch (error) {
         tasksContainer.innerHTML = `<div class="error">加载失败：${error.message}</div>`;
@@ -140,13 +140,13 @@ async function loadTasks() {
 // 获取过滤条件
 function getFilterQuery() {
     let filter = `user = "${currentUser.id}"`;
-    
+
     if (currentFilter === 'pending') {
         filter += ' && completed = false';
     } else if (currentFilter === 'completed') {
         filter += ' && completed = true';
     }
-    
+
     return filter;
 }
 
@@ -156,20 +156,20 @@ function renderTasks(tasks) {
         tasksContainer.innerHTML = '<div class="empty">暂无任务</div>';
         return;
     }
-    
+
     tasksContainer.innerHTML = tasks.map(task => `
         <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
             <div class="task-header">
                 <div class="task-title">${task.title}</div>
                 <div class="task-actions">
-                    ${!task.completed ? 
-                        `<button onclick="toggleTask('${task.id}')" class="task-btn btn-complete">
+                    ${!task.completed ?
+            `<button onclick="toggleTask('${task.id}')" class="task-btn btn-complete">
                             <i class="fas fa-check"></i> 完成
-                        </button>` : 
-                        `<button onclick="toggleTask('${task.id}')" class="task-btn" style="background: #6c757d">
+                        </button>` :
+            `<button onclick="toggleTask('${task.id}')" class="task-btn" style="background: #6c757d">
                             <i class="fas fa-undo"></i> 撤销
                         </button>`
-                    }
+        }
                     <button onclick="deleteTask('${task.id}')" class="task-btn btn-delete">
                         <i class="fas fa-trash"></i> 删除
                     </button>
@@ -178,10 +178,10 @@ function renderTasks(tasks) {
             <div class="task-description">${task.description || '无描述'}</div>
             <div class="task-meta">
                 <div>创建：${new Date(task.created).toLocaleDateString()}</div>
-                ${task.due_date ? 
-                    `<div>截止：${new Date(task.due_date).toLocaleDateString()}</div>` : 
-                    `<div>无截止日期</div>`
-                }
+                ${task.due_date ?
+            `<div>截止：${new Date(task.due_date).toLocaleDateString()}</div>` :
+            `<div>无截止日期</div>`
+        }
             </div>
         </div>
     `).join('');
@@ -200,12 +200,12 @@ async function addTask() {
     const title = document.getElementById('new-task-title').value;
     const description = document.getElementById('new-task-description').value;
     const dueDate = document.getElementById('new-task-due').value;
-    
+
     if (!title.trim()) {
         alert('请输入任务标题');
         return;
     }
-    
+
     try {
         const data = {
             title: title,
@@ -213,21 +213,22 @@ async function addTask() {
             user: currentUser.id,
             completed: false
         };
-        
+
         if (dueDate) {
             data.due_date = dueDate;
         }
-        
+        console.log('要提交的数据：', JSON.stringify(data));
         await pb.collection('tasks').create(data);
-        
+
         // 清空输入框
         document.getElementById('new-task-title').value = '';
         document.getElementById('new-task-description').value = '';
         document.getElementById('new-task-due').value = '';
-        
+
         loadTasks();
     } catch (error) {
-        alert('添加失败：' + error.message);
+        console.error('添加失败：' + error.message);
+        console.error('错误详情：', error.data);
     }
 }
 
@@ -247,7 +248,7 @@ async function toggleTask(taskId) {
 // 删除任务
 async function deleteTask(taskId) {
     if (!confirm('确定要删除这个任务吗？')) return;
-    
+
     try {
         await pb.collection('tasks').delete(taskId);
         loadTasks();
@@ -260,7 +261,7 @@ async function deleteTask(taskId) {
 function setupRealtime() {
     // 取消之前的订阅
     pb.collection('tasks').unsubscribe('*');
-    
+
     // 订阅任务集合的变更
     pb.collection('tasks').subscribe('*', function (e) {
         // 只处理当前用户的任务
